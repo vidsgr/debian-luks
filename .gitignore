@@ -1,0 +1,6 @@
+/gocode
+/*.img
+/*.tgz
+/secret.txt
+/overlays/customization/*
+!/overlays/customization/.keep

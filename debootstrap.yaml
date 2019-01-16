@@ -1,0 +1,62 @@
+{{- $arch     := or .arch     "amd64" -}}
+{{- $suite    := or .suite    "stable" -}}
+{{- $user     := or .user     "user" -}}
+{{- $pass     := or .pass     "password" -}}
+{{- $hostname := or .hostname "debian" -}}
+{{- $image    := or .image    (printf "debian-%s-%s.tgz" $suite $arch) -}}
+
+architecture: {{ $arch }}
+
+actions:
+  - action: run
+    description: fix DNS inside container
+    script: /bin/ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+
+  - action: debootstrap
+    description: create Debian filesystem
+    suite: {{ $suite }}
+    components: [ main, contrib, non-free ]
+    mirror: http://cdn.debian.net/debian/
+
+  - action: run
+    description: preseed variables
+    chroot: true
+    script: scripts/preseed.sh
+
+  - action: apt
+    recommends: true
+    description: add kernel and firmware
+    packages: [ linux-image-amd64, firmware-linux ]
+
+  - action: apt
+    recommends: true
+    description: add more packages
+    packages: [ grub-pc, cryptsetup, sudo, openssh-server ]
+
+  - action: run
+    description: cleanup packages after install
+    chroot: true
+    command: apt clean
+
+  - action: run
+    description: set hostname
+    chroot: true
+    command: echo {{ $hostname }} > /etc/hostname
+
+  - action: run
+    description: set hosts file
+    chroot: true
+    script: scripts/setup-hosts.sh {{ $hostname }}
+
+  - action: run
+    description: add a new user (will be in sudoers)
+    chroot: true
+    script: scripts/setup-user.sh {{ $user }} "{{ $pass }}"
+
+  - action: run
+    description: add customization overlay
+    script: scripts/customization.sh
+
+  - action: pack
+    file: {{ $image }}
+    compression: gz
