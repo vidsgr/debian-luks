@@ -27,8 +27,8 @@ rootfs=`blkid -s UUID -o value /dev/vda2`
 
 # create fstab
 cat > $ROOTDIR/etc/fstab << EOF
-/dev/mapper/crypt  /        ext4    defaults    0   1
-LABEL=boot         /boot/   ext4    defaults    0   1
+/dev/mapper/crypt  /        ext4    defaults,noatime    0   1
+LABEL=boot         /boot/   ext4    defaults,noatime    0   1
 EOF
 
 # create kernel cmdline
