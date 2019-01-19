@@ -2,7 +2,7 @@
 
 # create a random key file if not already existing
 if [ ! -f "$ARTIFACTDIR/secret.txt" ]; then
-  dd if=/dev/urandom bs=200 count=1 status=none | base64 > "$ARTIFACTDIR/secret.txt"
+  dd if=/dev/urandom bs=80 count=1 status=none | base64 --wrap=0 > "$ARTIFACTDIR/secret.txt"
 fi
 
 # umount the partitions
@@ -40,9 +40,10 @@ crypt  UUID=$rootfs  none  luks,initramfs
 EOF
 
 # update GRUB defaults
-perl -i -p -e "s{(^GRUB_CMDLINE_LINUX_DEFAULT=.quiet)}{\\1 cryptdevice=UUID=$rootfs:crypt}" $ROOTDIR/etc/default/grub
+perl -i -p -e "s{(^GRUB_CMDLINE_LINUX_DEFAULT=.quiet)}{\\1 cryptdevice=UUID=$rootfs:crypt fbcon=map:99}" $ROOTDIR/etc/default/grub
 perl -i -p -e "s/^#(GRUB_DISABLE_LINUX_UUID=true)/\\1/" $ROOTDIR/etc/default/grub
 perl -i -p -e "s/^#(GRUB_DISABLE_RECOVERY=.true.)/\\1/" $ROOTDIR/etc/default/grub
+perl -i -p -e "s/^#(GRUB_TERMINAL=console)/\\1/" $ROOTDIR/etc/default/grub
 
 # install GRUB
 grub-install --target=i386-pc --boot-directory=$ROOTDIR/boot --recheck /dev/vda
