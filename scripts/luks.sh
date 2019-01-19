@@ -2,7 +2,7 @@
 
 # create a random key file if not already existing
 if [ ! -f "$ARTIFACTDIR/secret.txt" ]; then
-  dd if=/dev/urandom bs=20 count=1 status=none | base64 > "$ARTIFACTDIR/secret.txt"
+  dd if=/dev/urandom bs=200 count=1 status=none | base64 > "$ARTIFACTDIR/secret.txt"
 fi
 
 # umount the partitions
