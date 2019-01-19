@@ -12,7 +12,7 @@ umount -lf $ROOTDIR/boot $ROOTDIR
 resize2fs -fM /dev/vda2
 
 # setup encryption
-cat "$ARTIFACTDIR/secret.txt" | cryptsetup-reencrypt /dev/vda2 --new --reduce-device-size 4096S
+cat "$ARTIFACTDIR/secret.txt" | cryptsetup-reencrypt /dev/vda2 --new --reduce-device-size 8192S --key-size 512 --hash sha512
 
 # resize filesystem to fill up partition again
 cat "$ARTIFACTDIR/secret.txt" | cryptsetup open /dev/vda2 crypt
