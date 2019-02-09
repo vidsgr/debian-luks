@@ -1,3 +1,15 @@
+REQUIREMENTS
+------------
+The following recipes have been tested on Debian Stretch: on other Debian versions your mileage might vary. Debos is a very promising but still young project; its support for Ubuntu is in the works but not yet ready.
+
+Since Debos uses a virtualization technology (via fakemachine) to isolate itself from the underlying OS, running these recipes inside a VM requires special care.
+
+Basically you have two choices:
+- enabling nested VM support in your virtualizer;
+- launching the debos commands as root with sudo.
+
+Nested virtualization support will be slower, but maintains the build process well isolated from your system. The sudo way, on the other hand, while being faster might expose you to potentially dangerous bugs. If you follow that route, you'd better make sure that your VM serve *only* for the task at hand.
+
 INSTALL
 -------
 
@@ -6,6 +18,7 @@ Install prerequisites:
 ```
 sudo apt install golang git libglib2.0-dev libostree-dev qemu-system-x86 \
      qemu-user-static debootstrap systemd-container grub-pc-bin cryptsetup
+sudo systemctl start systemd-resolved
 GOPATH=`pwd`/gocode go get -u github.com/go-debos/debos/cmd/debos
 ```
 
