@@ -1,0 +1,46 @@
+{{- $arch     := or .arch   "amd64" -}}
+{{- $suite    := or .suite  "stable" -}}
+{{- $pack     := or .pack   (printf "netdebian-%s-%s.tgz" $suite $arch) -}}
+{{- $image    := or .image  (printf "netdebian-%s-%s.img" $suite $arch) -}}
+
+architecture: {{ $arch }}
+
+actions:
+  - action: unpack
+    file: {{ $pack }}
+    compression: gz
+
+  - action: image-partition
+    description: create bootable image
+    imagename: {{ $image }}
+    imagesize: 8GB
+    partitiontype: msdos
+    partitions:
+      - name: boot
+        fs: ext4
+        start: 1M
+        end: 100M
+        flags: [ boot ]
+      - name: rootfs
+        fs: ext4
+        start: 100M
+        end: 100%
+    mountpoints:
+      - mountpoint: /
+        partition: rootfs
+      - mountpoint: /boot/
+        partition: boot
+
+  - action: filesystem-deploy
+    description: deploying filesystem onto image
+    setup-fstab: false
+    setup-kernel-cmdline: false
+
+  - action: run
+    description: setup GRUB and encryption
+    script: scripts/luks.auto.sh
+
+# - action: run
+#   description: compress the image
+#   postprocess: true
+#   command: xz -f {{ $image }}

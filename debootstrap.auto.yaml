@@ -1,9 +1,9 @@
 {{- $arch     := or .arch     "amd64" -}}
 {{- $suite    := or .suite    "stable" -}}
-{{- $user     := or .user     "user" -}}
+{{- $user     := or .user     "admin" -}}
 {{- $pass     := or .pass     "password" -}}
-{{- $hostname := or .hostname "debian" -}}
-{{- $image    := or .image    (printf "debian-%s-%s.tgz" $suite $arch) -}}
+{{- $hostname := or .hostname "netdebian" -}}
+{{- $image    := or .image    (printf "netdebian-%s-%s.tgz" $suite $arch) -}}
 
 architecture: {{ $arch }}
 
@@ -22,12 +22,12 @@ actions:
   - action: apt
     recommends: true
     description: add kernel and firmware
-    packages: [ linux-image-amd64, firmware-linux ]
+    packages: [ linux-image-amd64, firmware-linux, firmware-atheros, firmware-linux-nonfree ]
 
   - action: apt
     recommends: true
     description: add more packages
-    packages: [ grub-pc, cryptsetup, sudo, openssh-server ]
+    packages: [ grub-pc, cryptsetup, sudo, openssh-server, rsync, parted, shadowsocks-libev, pmacct, network-manager, curl, wget ,python3, python, python-pip, python3-pip, libdbus-1-dev, libdbus-glib-1-2, libdbus-glib-1-dev, openssl, openssh-server, apt-transport-https, dirmngr, software-properties-common, gnupg2]
 
   - action: run
     description: cleanup packages after install
